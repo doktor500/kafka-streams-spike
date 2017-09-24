@@ -1,0 +1,7 @@
+logging:
+  level.org.springframework.boot.context: WARN
+  level.org.springframework.context: WARN
+
+server.port: 8080
+
+management.security.enabled: false
