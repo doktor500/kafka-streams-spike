@@ -15,6 +15,7 @@ public class UsersStreamConfig {
     public static final String USERS_ACTIVE = "users-active";
     public static final String USERS_CREATED = "users-created";
     public static final String USERS_DELETED = "users-deleted";
+    public static final String USERS_COUNT_STORE = "users-count-store";
 
     public static Properties properties() {
         Properties properties = new Properties();

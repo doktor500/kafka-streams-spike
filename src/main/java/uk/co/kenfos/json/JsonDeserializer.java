@@ -1,10 +1,12 @@
 package uk.co.kenfos.json;
 
 import com.google.gson.Gson;
+import lombok.NoArgsConstructor;
 import org.apache.kafka.common.serialization.Deserializer;
 
 import java.util.Map;
 
+@NoArgsConstructor
 public class JsonDeserializer<T> implements Deserializer<T> {
 
     private Gson gson = new Gson();
