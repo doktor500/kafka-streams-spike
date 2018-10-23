@@ -29,7 +29,7 @@ dependencies {
     compile group: 'org.apache.kafka',             name: 'kafka-streams',           version: '2.0.0'
     compile group: 'org.projectlombok',            name: 'lombok',                  version: '1.18.2'
     compile group: 'org.springframework.boot',     name: 'spring-boot-starter-web', version: '2.0.6.RELEASE'
-    
+
     testCompile group: 'org.codehaus.groovy',      name: 'groovy',                  version: '2.5.3'
     testCompile group: 'org.spockframework',       name: 'spock-core',              version: '1.2-groovy-2.5'
 }

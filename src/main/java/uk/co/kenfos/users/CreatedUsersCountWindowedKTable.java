@@ -1,6 +1,5 @@
 package uk.co.kenfos.users;
 
-import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;
@@ -11,16 +10,20 @@ import org.apache.kafka.streams.kstream.Windowed;
 import org.apache.kafka.streams.state.WindowStore;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static uk.co.kenfos.users.UsersStreamConfig.USERS_COUNT_STORE;
+import static uk.co.kenfos.users.UsersStreamConfig.USERS_COUNT_WINDOW_STORE;
 
 @Slf4j
-@AllArgsConstructor
-public class UsersStreamWindowExample {
+public class CreatedUsersCountWindowedKTable {
 
-    private final UserStreams userStreams;
+    private final UserTopics userTopics;
+    private KTable<Windowed<String>, Long> createdUsers;
 
-    public void main(String[] args) {
-        KTable<Windowed<String>, Long> usersCount = userStreams.getUsersCreated()
+    public CreatedUsersCountWindowedKTable(UserTopics userTopics) {
+        this.userTopics = userTopics;
+    }
+
+    public CreatedUsersCountWindowedKTable initialize() {
+        createdUsers = userTopics.getUsersCreated()
             .groupByKey()
             .windowedBy(TimeWindows.of(SECONDS.toMillis(10)))
             .aggregate(
@@ -29,11 +32,18 @@ public class UsersStreamWindowExample {
                 materialized()
             );
 
-        usersCount.toStream().foreach((window, count) -> log.info("id: " + window.key() + " count: " + count));
+        return this;
+    }
+
+    public CreatedUsersCountWindowedKTable withContinuousQuery() {
+        createdUsers.toStream()
+            .foreach((window, count) -> log.info("Created user: " + window.key() + ", fetched: " + count + " times"));
+
+        return this;
     }
 
     private Materialized<String, Long, WindowStore<Bytes, byte[]>> materialized() {
-        return Materialized.<String, Long, WindowStore<Bytes, byte[]>>as(USERS_COUNT_STORE).
+        return Materialized.<String, Long, WindowStore<Bytes, byte[]>>as(USERS_COUNT_WINDOW_STORE).
             withKeySerde(Serdes.String()).
             withValueSerde(Serdes.Long());
     }

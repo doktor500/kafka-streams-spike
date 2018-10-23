@@ -1,9 +1,13 @@
 ## Kafka streams PoC
 
+USAGE:
+
+        sh src/scripts/users/create-users-topics.sh
+        ./gradlew bootRun
+
 TODO:
 
-- Create an interactive query on the active-users stream
-- Explore windowed queries
+- Materialize active users to an external data store
 
 NOTES:
 

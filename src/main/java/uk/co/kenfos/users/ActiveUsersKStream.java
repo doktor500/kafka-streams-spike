@@ -7,17 +7,19 @@ import uk.co.kenfos.model.User;
 import java.util.Objects;
 
 import static org.apache.kafka.common.serialization.Serdes.String;
-import static uk.co.kenfos.users.UsersStreamConfig.USERS_ACTIVE;
+import static uk.co.kenfos.users.UsersStreamConfig.ACTIVE_USERS;
 
 @AllArgsConstructor
-public class ActiveUsersStreamExample {
+public class ActiveUsersKStream {
 
-    private final UserStreams userStreams;
+    private final UserTopics userTopics;
 
-    public void main(String[] args) {
-        userStreams.getUsersCreated().leftJoin(userStreams.getUsersDeleted(), this::joinWhenNotEqual)
+    public ActiveUsersKStream initialize() {
+        userTopics.getUsersCreated().leftJoin(userTopics.getUsersDeleted(), this::joinWhenNotEqual)
             .filter((id, user) -> !Objects.isNull(user))
-            .to(USERS_ACTIVE, Produced.with(String(), userStreams.userSerde()));
+            .to(ACTIVE_USERS, Produced.with(String(), userTopics.userSerde()));
+
+        return this;
     }
 
     private User joinWhenNotEqual(User user1, User user2) {

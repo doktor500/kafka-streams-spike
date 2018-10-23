@@ -4,9 +4,10 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import uk.co.kenfos.users.ActiveUsersStreamExample;
-import uk.co.kenfos.users.UserStreams;
-import uk.co.kenfos.users.UsersStreamWindowExample;
+import uk.co.kenfos.users.ActiveUsersKStream;
+import uk.co.kenfos.users.CreatedUsersCountWindowedKTable;
+import uk.co.kenfos.users.CreatedUsersStore;
+import uk.co.kenfos.users.UserTopics;
 
 import static uk.co.kenfos.users.UsersStreamConfig.properties;
 
@@ -16,10 +17,15 @@ public class Application {
         SpringApplication.run(Application.class, args);
 
         StreamsBuilder builder = new StreamsBuilder();
-        UserStreams userStreams = new UserStreams(builder);
+        UserTopics userTopics = new UserTopics(builder);
 
-        new ActiveUsersStreamExample(userStreams).main(args);
-        new UsersStreamWindowExample(userStreams).main(args);
-        new KafkaStreams(builder.build(), properties()).start();
+        new ActiveUsersKStream(userTopics).initialize();
+        new CreatedUsersCountWindowedKTable(userTopics).initialize().withContinuousQuery();
+        CreatedUsersStore createdUsersStore = new CreatedUsersStore(userTopics).initialize();
+
+        KafkaStreams streams = new KafkaStreams(builder.build(), properties());
+        streams.start();
+
+        createdUsersStore.query(streams);
     }
 }

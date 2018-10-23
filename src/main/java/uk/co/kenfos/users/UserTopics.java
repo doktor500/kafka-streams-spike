@@ -11,17 +11,17 @@ import uk.co.kenfos.model.User;
 
 import static org.apache.kafka.common.serialization.Serdes.String;
 import static org.apache.kafka.common.serialization.Serdes.serdeFrom;
-import static uk.co.kenfos.users.UsersStreamConfig.USERS_CREATED;
-import static uk.co.kenfos.users.UsersStreamConfig.USERS_DELETED;
+import static uk.co.kenfos.users.UsersStreamConfig.CREATED_USERS;
+import static uk.co.kenfos.users.UsersStreamConfig.DELETED_USERS;
 
-public class UserStreams {
+public class UserTopics {
 
     private KStream<String, User> usersCreated;
     private KTable<String, User> usersDeleted;
 
-    public UserStreams(StreamsBuilder builder) {
-        usersCreated = builder.stream(USERS_CREATED, Consumed.with(String(), userSerde()));
-        usersDeleted = builder.table(USERS_DELETED, Consumed.with(String(), userSerde()));
+    public UserTopics(StreamsBuilder builder) {
+        usersCreated = builder.stream(CREATED_USERS, Consumed.with(String(), userSerde()));
+        usersDeleted = builder.table(DELETED_USERS, Consumed.with(String(), userSerde()));
     }
 
     public Serde<User> userSerde() {
